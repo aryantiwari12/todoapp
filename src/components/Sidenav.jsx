@@ -8,10 +8,10 @@ export default function Sidenav() {
 
     return (
 
-        <div class="sidenav mt-1">
+        <div class="sidenav mt-1 ">
             <div className="container-fluid">
-                <div className="row ">
-                    <div className="col-lg-3 shadow-sm bg-body ">
+                <div className="row">
+                    <div className="col-lg-3  shadow-sm bg-body  ">
 
                         <img src={IMAGE} class="w-25 rounded-circle mt-2" alt="" />
                         <h1 class="fs-5">Jerry Luis</h1>

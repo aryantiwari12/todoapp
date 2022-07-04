@@ -5,19 +5,63 @@ import axios from "axios";
 function Addtask() {
 
     const [data, setdata] = useState([]);
+    const [name,setname]=useState();
+    const [date,setdate]=useState()
+   
 
-    const addData = () => {
+    function getuser(){
         axios.get("http://139.59.47.49:4004/api/tasks?limit=10&start=1&status=1")
-         .then((rsp)=>{
-            setdata(rsp.data);
-         })
-         .catch(err => console.log(err));
+        .then((rsp) => {
+            setdata(rsp.data.rows);
+            console.log(rsp.data)
+            
+        })
+        .catch(err => console.log(err));
     }
-    useEffect(()=>{
-        addData()
+
+    useEffect(() => {
+        
+     
+        getuser()
     },[])
+    
 
+//POST DATA
 
+function addData(){
+    axios.post('http://139.59.47.49:4004/api/task',{
+        task_name:name,
+        date:date
+       
+    }).then((Response)=>{
+        console.log(Response);
+        getuser()
+    })
+   
+}
+
+const deletedata=(id)=>{
+    axios.delete(`http://139.59.47.49:4004/api/task/delete/${id}`)
+    .then((res)=>{
+        console.log(res);
+        getuser()
+    })
+}
+
+const done=async(id) =>{
+    const postdata={
+        id,
+        status:1,
+    };
+    axios.post(`http://139.59.47.49:4004/api/task/status`,postdata)
+    .then((res)=>{
+        console.log(res);
+    })
+}
+
+const completedata=()=>{
+    document.getElementById('danger1').style.backgroundColor = 'Red';
+}
 
     return (
         <div class="">
@@ -33,9 +77,9 @@ function Addtask() {
                             </div>
                             <div class="modal-body">
                                 <p class="text-start">Task Name</p>
-                                <input type="text" placeholder="Enter  task here" class="w-100" />
+                                <input type="text" placeholder="Enter  task here" onChange={(e) => setname(e.target.value)} class="w-100" />
                                 <p class="text-start">Date</p>
-                                <input type="date" class="w-100" />
+                                <input type="date" onChange={(e) => setdate(e.target.value)} class="w-100" />
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn- w-100 text-white" style={{ backgroundColor: "#FF9F29" }} onClick={() => addData()} data-bs-dismiss="modal">Add Task</button>
@@ -53,7 +97,7 @@ function Addtask() {
                     </div>
                     <div className="col-6">
 
-                        <button type="btn" class="btn w-100 p-2 shadow rounded text-dark">COMPLETED</button>
+                        <button type="btn" id="danger1" class="btn w-100 p-2 shadow rounded text-dark" onClick={()=>completedata()}>COMPLETED</button>
 
                     </div>
                 </div>
@@ -64,36 +108,32 @@ function Addtask() {
                 <h1 class="text-start fs-4">Today's Tasks</h1>
 
             </div>
-            {data.map((resp) => {
-                return (
-                    <div className="conatiner">
-                        <div className="row ">
-                            <div className="col p-2 shadow m-2 rounded">
-                                <h5 class="fs-6  p-2 text-start">{resp.task_name}</h5>
-                                <h5 class="text-start">{resp.date}</h5>
-                                <button class="mt-5 float-start btn btn-success">Mark Done</button>
-                                <img src={IMAGE1} class="we-251 float-end" style={{ cursor: "pointer" }} alt="" />
-                                <i class="fa-solid fa-circle-trash"></i>
-                            </div>
-                            <div className="col p-2 shadow m-2 rounded">
-                                <h5 class="fs-6 p-2 text-start ">{resp.task_name}</h5>
-                                <h5 class="text-start">{resp.date}</h5>
-                                <button class="mt-5 float-start btn btn-success">Mark Done</button>
-                                <img src={IMAGE1} class="we-251 float-end" style={{ cursor: "pointer" }} alt="" />
-                            </div>
-                            <div className="col p-2 shadow m-2 rounded">
-                                <h5 class="fs-6 p-2 text-start">{resp.task_name}</h5>
-                                <h5 class="text-start">{resp.date}</h5>
-                                <button class="mt-5 float-start btn btn-success">Mark Done</button>
-                                <img src={IMAGE1} class="we-251 float-end" style={{ cursor: "pointer" }} alt="" />
-                            </div>
-                        </div>
-                    </div>
-                );
-            })}
+
+            <div className="contaner">
+                <div className="row ">
+
+                    {data.map((items) => {
+                        return (
+
+                            <div className="col-3 p-2 shadow m-5 rounded">
+
+                                <h5 class="fs-6 p-2 text-start">{items.task_name}</h5>
+                                <h5 class="text-start">{items.date}</h5>
+                                <button class="mt-5 float-start btn btn-success" onClick={()=>done(items.id)} >Mark Done</button>
+                                <img src={IMAGE1} class="we-251 float-end" onClick={()=>deletedata(items.id)} style={{ cursor: "pointer" }} alt="" />
+                               
 
 
-        </div>
+                            </div>
+                        );
+                    })}
+
+                </div>
+            </div>
+
+
+
+        </div >
 
     )
 

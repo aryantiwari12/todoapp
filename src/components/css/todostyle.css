@@ -18,3 +18,6 @@ img.we-251.float-end {
 h5.modal-tittle {
     margin-left:185px;
 }
+.active{
+    background: rgba(251, 167, 12, 0.86) 
+}

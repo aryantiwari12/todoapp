@@ -1,67 +1,114 @@
 import React, { useEffect, useState } from "react";
 import IMAGE1 from '../components/img/14.jpg';
 import axios from "axios";
+import Sidenav from "./Sidenav";
+
+
 
 function Addtask() {
 
-    const [data, setdata] = useState([]);
-    const [name,setname]=useState();
-    const [date,setdate]=useState()
-   
+    
 
-    function getuser(){
-        axios.get("http://139.59.47.49:4004/api/tasks?limit=10&start=1&status=1")
-        .then((rsp) => {
-            setdata(rsp.data.rows);
-            console.log(rsp.data)
-            
-        })
-        .catch(err => console.log(err));
+    const [data, setdata] = useState([]);
+    const [name, setname] = useState();
+    const [date, setdate] = useState()
+    const [show, setshow] = useState(1);
+
+
+    function getuser() {
+        axios.get("http://139.59.47.49:4004/api/tasks?limit=20&start=1")
+            .then((rsp) => {
+                setdata(rsp.data.rows);
+                console.log(rsp.data)
+
+            })
+            .catch(err => console.log(err));
     }
 
     useEffect(() => {
-        
-     
+
+
         getuser()
-    },[])
-    
+    }, [])
 
-//POST DATA
 
-function addData(){
-    axios.post('http://139.59.47.49:4004/api/task',{
-        task_name:name,
-        date:date
+    //POST DATA
+
+    function addData() {
+        axios.post('http://139.59.47.49:4004/api/task', {
+            task_name: name,
+            date: date
+
+        }).then((Response) => {
+            console.log(Response);
+            getuser()
+        })
+
+    }
+
+    // const handlestatus =  (id) => {
        
-    }).then((Response)=>{
-        console.log(Response);
-        getuser()
-    })
+    //     axios.delete(`http://139.59.47.49:4004/api/tasks?limit=10&start=1&status=0/${id}`)
+    //         .then((res) => {
+    //             console.log(res.data);
+    //             getuser()
+    //         })
+    // }
+
+    const handlestatus=(id)=>{
+        const postdata={
+            id,
+            status:0
+        }
+        axios.post('http://139.59.47.49:4004/api/task/status',postdata)
+        .then((resp)=>{
+            console.log(resp);
+        })
+    }
+
+    // const handledeletedstatus=()=>{
+    //         alert("hello")
+    // }
+
+    
+    const handleinprocess=(e)=>{
+        axios.get('http://139.59.47.49:4004/api/tasks?limit=10&start=1&status=1')
+        .then((res)=>{
+            setdata(res.data.rows);
+            console.log(res.data)
+            
+        })
+        setshow(e)
+    }
+
+
+    const handlecomplete = (e) => {
+        axios.get('http://139.59.47.49:4004/api/tasks?limit=10&start=1&status=2')
+        .then((res)=>{
+            setdata(res.data.rows);
+            console.log(res.data) 
+        })
+        setshow(e)
+        
+    } 
    
-}
+    
+   
 
-const deletedata=(id)=>{
-    axios.delete(`http://139.59.47.49:4004/api/task/delete/${id}`)
-    .then((res)=>{
-        console.log(res);
-        getuser()
-    })
-}
+   const DoneData= async (id) => {
+        const postdata = {
+            id,
+            status: 2,
+        };
+        axios.post(`http://139.59.47.49:4004/api/task/status`, postdata)
+            .then((res) => {
+                console.log(res);
+                
+            })
+    }
 
-const done=async(id) =>{
-    const postdata={
-        id,
-        status:1,
-    };
-    axios.post(`http://139.59.47.49:4004/api/task/status`,postdata)
-    .then((res)=>{
-        console.log(res);
-    })
-}
+  
 
-const completedata=()=>{
-    document.getElementById('danger1').style.backgroundColor = 'Red';
-}
 
     return (
         <div class="">
@@ -92,12 +139,14 @@ const completedata=()=>{
 
             <div className="container">
                 <div className="row mt-5">
-                    <div className="col-6  " >
-                        <button class=" w-100 p-2 rounded text-white" style={{ background: "#FF9F29" }}>IN-Progress</button>
+                    <div className="col-6">
+                        
+                        <button class={show === 1 ? "w-100 p-2 btn btn-primary rounded text-white nav-link active" : "nav-link w-100 h-100 rounded"} onClick={() =>handleinprocess(1)}>IN-Progress</button>
+                        
                     </div>
                     <div className="col-6">
 
-                        <button type="btn" id="danger1" class="btn w-100 p-2 shadow rounded text-dark" onClick={()=>completedata()}>COMPLETED</button>
+                        <button type="btn" class={show === 2 ? "w-100 p-2 btn btn-success nav-link active shadow rounded text-white" : "nav-link w-100 h-100 rounded"} onClick={() => handlecomplete(2)}>COMPLETED</button>
 
                     </div>
                 </div>
@@ -119,11 +168,11 @@ const completedata=()=>{
 
                                 <h5 class="fs-6 p-2 text-start">{items.task_name}</h5>
                                 <h5 class="text-start">{items.date}</h5>
-                                <button class="mt-5 float-start btn btn-success" onClick={()=>done(items.id)} >Mark Done</button>
-                                <img src={IMAGE1} class="we-251 float-end" onClick={()=>deletedata(items.id)} style={{ cursor: "pointer" }} alt="" />
+                                <button class="mt-5 float-start btn btn-success" onClick={()=>DoneData(items.id)} >Mark Done</button>
+                                <img src={IMAGE1} class="we-251 float-end" onClick={() =>handlestatus(items.id)} style={{ cursor: "pointer" }} alt="" />
+
+
                                
-
-
                             </div>
                         );
                     })}
@@ -131,9 +180,10 @@ const completedata=()=>{
                 </div>
             </div>
 
-
-
+            
+        {/* <Sidenav handledeletedstatus={handledeletedstatus}/>   */}
         </div >
+        
 
     )
 

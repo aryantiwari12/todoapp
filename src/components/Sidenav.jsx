@@ -6,7 +6,7 @@ import "./css/todostyle.css";
 
 export default function Sidenav() {
     
-//  const [show,setshow]=useState(1)
+
    
     
 
@@ -23,8 +23,8 @@ export default function Sidenav() {
 
                         <div class="mt-5 ">
                             <button type="btn" class="btn w-100 p-3 text-white active" style={{ backgroundColor: "#FF9F29" }}><p className="mr-2"><i class="fa-solid fa-house-chimney p-2"></i>Home</p></button>
-                            <button type="btn" class=" btn w-100 p-4 text-dark  shadow"><i class="fa-solid fa-trash p-2" ></i>Deleted Tasks</button>
-                            {/* onClick={()=>handledeletedstatus()} */}
+                            <button type="btn" class=" btn w-100 p-4 text-dark  shadow"><i class="fa-solid fa-trash p-2"></i>Deleted Tasks</button>
+                            
                         </div>
                         <div class="log mt-5">
                             <h4><i class="fa-solid fa-right-from-bracket" style={{ color: "#FF9F29" }}></i> Log out</h4>
